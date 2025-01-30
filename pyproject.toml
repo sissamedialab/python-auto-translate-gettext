@@ -1,0 +1,16 @@
+[project]
+name = "po-translate"
+version = "0.1.0"
+description = "Automatically translate gettext .po files with DeepL."
+authors = [
+    { name = "Matteo Gamboz", email = "gamboz@medialab.sissa.it" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+po-translate = "po_translate:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
