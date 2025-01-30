@@ -79,14 +79,21 @@ def translate(text: str, lang: str, translator: deepl.translator.Translator) -> 
     Handles placeholders in the text to prevent them from being altered during translation.
     Returns the translated text.
     """
-    placeholders = {}
-    tokens = re.findall(r"%\((.*?)\)s", text)
-    # FIXME: use regexp that allows for f-string's {}
-
+    # FIXME: refactor variable hiding into testable function!
     # Replace each token with a unique placeholder
-    for i, token in enumerate(tokens):
+    # Manage f-strings and %-interpolated variables separately
+    placeholders_interpolated = {}
+    tokens_interpolated = re.findall(r"%\((.*?)\)s", text)
+    for i, token in enumerate(tokens_interpolated):
         placeholder = f"__PLACEHOLDER_{i}__"
-        placeholders[placeholder] = f"%({token})s"
+        placeholders_interpolated[placeholder] = f"%({token})s"
+        text = text.replace(f"%({token})s", placeholder)
+
+    placeholders_fstrings = {}
+    tokens_fstrings = re.findall(r"{(.*?)}", text)
+    for j, token in enumerate(tokens_fstrings, start=i):
+        placeholder = f"__PLACEHOLDER_{j}__"
+        placeholders_fstrings[placeholder] = f"{{{token}}}"
         text = text.replace(f"%({token})s", placeholder)
 
     # Perform the translation
@@ -97,7 +104,9 @@ def translate(text: str, lang: str, translator: deepl.translator.Translator) -> 
         sys.exit(1)
 
     # Replace the placeholders back with the original tokens
-    for placeholder, token in placeholders.items():
+    for placeholder, token in placeholders_interpolated.items():
+        translated_text = translated_text.replace(placeholder, token)
+    for placeholder, token in placeholders_fstrings.items():
         translated_text = translated_text.replace(placeholder, token)
 
     return translated_text
