@@ -65,6 +65,32 @@ def read_api_token(config_path: str) -> str:
     return api_token
 
 
+def hide_variables(text: str) -> (str, dict):
+    """Replace variables enbedded into the text with a placeholder."""
+    # Manage f-strings and %-interpolated variables separately
+    placeholders = {}
+    tokens = re.findall(r"%\((.*?)\)s", text)
+    i = 0
+    for i, token in enumerate(tokens):
+        placeholder = f"__PLACEHOLDER_{i}__"
+        placeholders[placeholder] = f"%({token})s"
+        text = text.replace(f"%({token})s", placeholder)
+
+    tokens = re.findall(r"\{(.*?)\}", text)
+    for j, token in enumerate(tokens, start=i):
+        placeholder = f"__PLACEHOLDER_{j}__"
+        placeholders[placeholder] = f"{{{token}}}"
+        text = text.replace(f"{{{token}}}", placeholder)
+    return text, placeholders
+
+
+def unhide_variables(text: str, placeholders: dict) -> str:
+    """Replace the placeholders back with the original tokens."""
+    for placeholder, token in placeholders.items():
+        text = text.replace(placeholder, token)
+    return text
+
+
 def translate(text: str, lang: str, translator: deepl.translator.Translator) -> str:
     """
     Translates the given text to the target language using the provided translator.
@@ -72,38 +98,16 @@ def translate(text: str, lang: str, translator: deepl.translator.Translator) -> 
     Handles placeholders in the text to prevent them from being altered during translation.
     Returns the translated text.
     """
-    # FIXME: refactor variable hiding into testable function!
-    # Replace each token with a unique placeholder
-    # Manage f-strings and %-interpolated variables separately
-    placeholders_interpolated = {}
-    tokens_interpolated = re.findall(r"%\((.*?)\)s", text)
-    i = 0
-    for i, token in enumerate(tokens_interpolated):
-        placeholder = f"__PLACEHOLDER_{i}__"
-        placeholders_interpolated[placeholder] = f"%({token})s"
-        text = text.replace(f"%({token})s", placeholder)
-
-    placeholders_fstrings = {}
-    tokens_fstrings = re.findall(r"{(.*?)}", text)
-    for j, token in enumerate(tokens_fstrings, start=i):
-        placeholder = f"__PLACEHOLDER_{j}__"
-        placeholders_fstrings[placeholder] = f"{{{token}}}"
-        text = text.replace(f"%({token})s", placeholder)
-
+    prepared_text, placeholders = hide_variables(text, {})
     # Perform the translation
     try:
-        translated_text = str(translator.translate_text(text, target_lang=lang))
+        translated_text = str(
+            translator.translate_text(prepared_text, target_lang=lang),
+        )
     except deepl.DeepLException:
         logger.exception("DeepL translation error")
         sys.exit(1)
-
-    # Replace the placeholders back with the original tokens
-    for placeholder, token in placeholders_interpolated.items():
-        translated_text = translated_text.replace(placeholder, token)
-    for placeholder, token in placeholders_fstrings.items():
-        translated_text = translated_text.replace(placeholder, token)
-
-    return translated_text
+    return unhide_variables(translated_text, placeholders)
 
 
 def process_file(filename: str, lang: str, api_token: str) -> None:

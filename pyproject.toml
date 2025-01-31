@@ -6,7 +6,15 @@ authors = [
     { name = "Matteo Gamboz", email = "gamboz@medialab.sissa.it" }
 ]
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "deepl",
+    "polib"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+]
 
 [project.scripts]
 po-translate = "po_translate:main"
@@ -96,3 +104,6 @@ docstring-code-format = false
 # This only has an effect when the `docstring-code-format` setting is
 # enabled.
 docstring-code-line-length = "dynamic"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = ["D104", "S101"]

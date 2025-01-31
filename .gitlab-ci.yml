@@ -1,3 +1,4 @@
+# TODO: convert these ruff jobs to calling pre-commit
 .base_ruff:
   stage: build
   interruptible: true
@@ -19,3 +20,12 @@ Ruff Format:
   extends: .base_ruff
   script:
     - ruff format --diff
+
+
+run-tests:
+  stage: test
+  tags:
+    - fast-test
+  script:
+    - pip install --cache $PIP_CACHE_DIR --break-system-packages .[test]
+    - pytest
