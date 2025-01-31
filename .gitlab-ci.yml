@@ -5,15 +5,16 @@ default:
     paths:
       - .cache
 
+stages:
+  - test
+  - build
+
 variables:
   PIP_CACHE_DIR: $CI_PROJECT_DIR/.cache/pip
 
-include:
-  - project: 'wjs/wjs-profile-project'
-    ref: 'wjs-develop'
-    file: '.gitlab-ci-pre-commit.yml'
+# TODO: use pip cache in WJS templates and include them here
 
-pre-commit:
+Lint (pre-commit):
   stage: test
   tags:
     - fast-test
@@ -27,12 +28,27 @@ pre-commit:
     - pip install --cache $PIP_CACHE_DIR --user pre-commit
     - python -m pre_commit run -a
 
-#- .run-pre-commit
-
-run-tests:
+Run tests:
   stage: test
   tags:
     - fast-test
   script:
     - pip install --cache $PIP_CACHE_DIR --user .[test]
     - python -m pytest
+
+Build and upload package:
+  stage: build
+  tags:
+    - inasset
+  when: manual
+  variables:
+    PACKAGE_REGISTRY_PROJECT_ID: 60
+
+    TWINE_PASSWORD: ${CI_JOB_TOKEN}
+    TWINE_USERNAME: "gitlab-ci-token"
+
+  script:
+    - pip install --cache $PIP_CACHE_DIR --user build twine
+    - python -m build
+    - python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${PACKAGE_REGISTRY_PROJECT_ID}/packages/pypi dist/*
+    - echo "Package successfully published."
