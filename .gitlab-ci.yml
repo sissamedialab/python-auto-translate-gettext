@@ -1,5 +1,9 @@
 default:
-    image: python:3.13
+  image: python:3.13
+  cache:
+    key: cache-default
+    paths:
+      - .cache
 
 variables:
   PIP_CACHE_DIR: $CI_PROJECT_DIR/.cache/pip
