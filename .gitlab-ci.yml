@@ -10,8 +10,20 @@ include:
     file: '.gitlab-ci-pre-commit.yml'
 
 pre-commit:
-  extends:
-    - .run-pre-commit
+  stage: test
+  tags:
+    - fast-test
+
+  variables:
+    # Use the following after force-pushes:
+    # GIT_STRATEGY: clone
+    PRE_COMMIT_HOME: .pre-commit
+
+  script:
+    - pip install --cache $PIP_CACHE_DIR --user pre-commit
+    - python -m pre_commit run -a
+
+#- .run-pre-commit
 
 run-tests:
   stage: test
