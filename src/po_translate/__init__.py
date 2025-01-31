@@ -12,11 +12,19 @@ import logging
 import re
 import sys
 
+import colorlog
 import deepl
 import polib
 
-logging.basicConfig(level=logging.DEBUG)
+handler = colorlog.StreamHandler()
+handler.setFormatter(
+    colorlog.ColoredFormatter("%(log_color)s%(levelname)s:%(name)s:%(message)s"),
+)
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.DEBUG)
+root_logger.addHandler(handler)
 logger = logging.getLogger(__name__)
+logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)
 
 
 def parse_arguments() -> None:
