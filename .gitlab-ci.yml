@@ -24,6 +24,7 @@ Ruff Format:
 
 run-tests:
   stage: test
+  image: python:3.13
   tags:
     - fast-test
   script:
