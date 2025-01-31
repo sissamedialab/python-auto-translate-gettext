@@ -1,37 +1,29 @@
-python-auto-translate-gettext
-===============
+po-translate
+============
 
 What is it?
 -----------
 
 This tool will translate a gettext .po file using `DeepL <https://www.deepl.com/>`__ and save the translated strings to that same file.
 
+Here we just expand on `python-auto-translate-gettext https://github.com/confdnt/python-auto-translate-gettext`_
+
 Documentation
 -------------
 
-You will need the polib and deepl python libraries installed on your system.
-Get an API key from DeepL for free. Add it as an environment variable or directly in the script.
+Install with ``pip`` or ``pipx`` from out internal registry. E.g.
+``pipx install -i https://gitlab.sissamedialab.it/api/v4/projects/60/packages/pypi/simple po-translate``
 
-Just run python ./main.py
+Add you DeepL authentication token to a ``config.ini`` file of this form:
 
-or
+    [deepL]
+    api_token = your_deepl_api_token_here
 
-python ./main.py -l FR -f ./text.po
-
--l = Language
--f = Filename (full path)
-
-Provide the full path of your .po file.
-Pick the language it should be translated to e.g. DE or FR.
-
+and call ``po-translate`` indicating the target language and the .po file to process:
+``po-translate -l PT-BR -f mymessages.po --config .../config.ini``
 
 Licensing
 ---------
 
 python-auto-translate-gettext is licensed under the terms of the MIT License (see
 `License <LICENSE>`__).
-
-python-auto-translate-gettext includes copies of Python's ``captured_output``,
-``captured_stdout`` and ``captured_stderr`` context managers, which are
-licensed under the terms of the
-`PSF LICENSE AGREEMENT FOR PYTHON <https://docs.python.org/3/license.html>`__.
