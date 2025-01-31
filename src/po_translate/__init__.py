@@ -98,7 +98,7 @@ def translate(text: str, lang: str, translator: deepl.translator.Translator) -> 
     Handles placeholders in the text to prevent them from being altered during translation.
     Returns the translated text.
     """
-    prepared_text, placeholders = hide_variables(text, {})
+    prepared_text, placeholders = hide_variables(text)
     # Perform the translation
     try:
         translated_text = str(
