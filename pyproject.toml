@@ -1,6 +1,6 @@
 [project]
 name = "po-translate"
-version = "0.1.0"
+version = "1.0.0"
 description = "Automatically translate gettext .po files with DeepL."
 authors = [
     { name = "Matteo Gamboz", email = "gamboz@medialab.sissa.it" }

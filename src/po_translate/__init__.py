@@ -173,16 +173,9 @@ def main() -> None:
     args = parse_arguments()
     config_path = args.config.name
     api_token = read_api_token(config_path)
-
-    # Validate target language (basic check for two-letter ISO code)
-    if not re.fullmatch(r"[A-Z]{2}", args.language.upper()):
-        logger.error(
-            "Error: Target language must be a two-letter ISO code (e.g., DE, FR).",
-        )
-        sys.exit(1)
-
     po_file_path = args.file.name
-    process_file(po_file_path, args.language.upper(), api_token)
+    target_lang = args.language.upper()
+    process_file(po_file_path, target_lang, api_token)
 
 
 if __name__ == "__main__":
