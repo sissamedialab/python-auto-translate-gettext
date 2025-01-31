@@ -10,23 +10,23 @@ from po_translate import hide_variables
     [
         (
             "aaa {self.journal} bbb",
-            "aaa __PLACEHOLDER_0__ bbb",
-            {"__PLACEHOLDER_0__": "{self.journal}"},
+            "aaa 🤦 bbb",
+            {"🤦": "{self.journal}"},
         ),
         (
             "Recipient user: {self.user if self.user else self.email} - journal: {self.journal}",
-            "Recipient user: __PLACEHOLDER_0__ - journal: __PLACEHOLDER_1__",
+            "Recipient user: 🤦 - journal: 💆",
             {
-                "__PLACEHOLDER_0__": "{self.user if self.user else self.email}",
-                "__PLACEHOLDER_1__": "{self.journal}",
+                "🤦": "{self.user if self.user else self.email}",
+                "💆": "{self.journal}",
             },
         ),
         (
             "release %(user)s and %(other)s",
-            "release __PLACEHOLDER_0__ and __PLACEHOLDER_1__",
+            "release 🤦 and 💆",
             {
-                "__PLACEHOLDER_0__": "%(user)s",
-                "__PLACEHOLDER_1__": "%(other)s",
+                "🤦": "%(user)s",
+                "💆": "%(other)s",
             },
         ),
     ],

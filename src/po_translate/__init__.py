@@ -68,17 +68,32 @@ def read_api_token(config_path: str) -> str:
 def hide_variables(text: str) -> (str, dict):
     """Replace variables enbedded into the text with a placeholder."""
     # Manage f-strings and %-interpolated variables separately
+    #
+    # We use 1-char non-translatable placeholders in order
+    # - avoid the placeholder beeing translated (sometimes it happened)
+    # - reduce the number of billed-chars
+    keys = [
+        "🤦",
+        "💆",
+        "🧐",
+        "😶",
+        "😘",
+        "😓",
+        "🤠",
+        "🙆",
+        "😮",
+    ]
     placeholders = {}
     tokens = re.findall(r"%\((.*?)\)s", text)
     i = 0
     for i, token in enumerate(tokens):
-        placeholder = f"__PLACEHOLDER_{i}__"
+        placeholder = keys[i]  # yes, fail badly if we have many variables 😉
         placeholders[placeholder] = f"%({token})s"
         text = text.replace(f"%({token})s", placeholder)
 
     tokens = re.findall(r"\{(.*?)\}", text)
     for j, token in enumerate(tokens, start=i):
-        placeholder = f"__PLACEHOLDER_{j}__"
+        placeholder = keys[j]
         placeholders[placeholder] = f"{{{token}}}"
         text = text.replace(f"{{{token}}}", placeholder)
     return text, placeholders
