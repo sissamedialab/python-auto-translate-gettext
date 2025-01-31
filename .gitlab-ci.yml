@@ -1,32 +1,22 @@
-# TODO: convert these ruff jobs to calling pre-commit
-.base_ruff:
-  stage: build
-  interruptible: true
-  image:
-    name: ghcr.io/astral-sh/ruff:0.9.3-alpine
-  before_script:
-    - cd $CI_PROJECT_DIR
-    - ruff --version
+default:
+    image: python:3.13
 
-Ruff Check:
-  extends: .base_ruff
-  script:
-    - ruff check --output-format=gitlab > code-quality-report.json
-  artifacts:
-    reports:
-      codequality: $CI_PROJECT_DIR/code-quality-report.json
+variables:
+  PIP_CACHE_DIR: $CI_PROJECT_DIR/.cache/pip
 
-Ruff Format:
-  extends: .base_ruff
-  script:
-    - ruff format --diff
+include:
+  - project: 'wjs/wjs-profile-project'
+    ref: 'wjs-develop'
+    file: '.gitlab-ci-pre-commit.yml'
 
+pre-commit:
+  extends:
+    - .run-pre-commit
 
 run-tests:
   stage: test
-  image: python:3.13
   tags:
     - fast-test
   script:
-    - pip install --cache $PIP_CACHE_DIR --break-system-packages .[test]
+    - pip install --cache $PIP_CACHE_DIR --user .[test]
     - pytest
