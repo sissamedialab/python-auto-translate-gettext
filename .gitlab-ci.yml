@@ -19,4 +19,4 @@ run-tests:
     - fast-test
   script:
     - pip install --cache $PIP_CACHE_DIR --user .[test]
-    - pytest
+    - python -m pytest
